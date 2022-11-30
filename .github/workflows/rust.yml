@@ -42,7 +42,7 @@ jobs:
       - name: Build benchmarks
         run: cargo bench --no-run
       - name: Run benchmarks
-        run: cargo bench -- -n
+        run: cargo bench
       - name: Upload benchmark result
         uses: actions/upload-artifact@v3
         with:
