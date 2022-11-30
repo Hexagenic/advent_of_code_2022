@@ -43,3 +43,8 @@ jobs:
         run: cargo bench --no-run
       - name: Run benchmarks
         run: cargo bench -- -n
+      - name: Upload benchmark result
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark
+          path: target/criterion
