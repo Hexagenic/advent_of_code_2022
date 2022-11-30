@@ -23,10 +23,7 @@ fn run() -> Result<(), Error> {
         for day in &puzzles {
             let (solution1, solution2) = solutions::get_solution(*day);
             let input_file = format!("day{:0>2}.txt", day);
-            let path = env::current_dir()
-                .unwrap()
-                .join("input")
-                .join(&input_file);
+            let path = env::current_dir().unwrap().join("input").join(&input_file);
 
             let file: String = std::fs::read_to_string(&path)?;
 
