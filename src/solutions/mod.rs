@@ -1,6 +1,5 @@
 mod day01;
 
-
 #[derive(Debug, PartialEq, Eq)]
 pub enum Solution {
     Integer(i64),

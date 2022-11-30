@@ -1,10 +1,12 @@
 use std::env;
-mod error;
-mod solutions;
+
 use error::Error;
 use solutions::Solution;
 
-fn print_solution(day: u8, part: char, solution: Option<solutions::Solution>) {
+mod error;
+mod solutions;
+
+fn print_solution(day: u8, part: char, solution: Option<Solution>) {
     match solution {
         Some(Solution::Integer(i)) => println!("{}{}: {}", day, part, i),
         Some(Solution::String(string)) => println!("{}{}:\n{}", day, part, string),
@@ -21,7 +23,7 @@ fn run() -> Result<(), Error> {
         for day in &puzzles {
             let (solution1, solution2) = solutions::get_solution(*day);
             let input_file = format!("day{:0>2}.txt", day);
-            let path = std::env::current_dir()
+            let path = env::current_dir()
                 .unwrap()
                 .join("input")
                 .join(&input_file);

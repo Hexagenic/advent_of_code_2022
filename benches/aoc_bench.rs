@@ -1,5 +1,4 @@
 extern crate advent_of_code_2022;
-
 #[macro_use]
 extern crate criterion;
 
@@ -10,7 +9,7 @@ use criterion::Criterion;
 struct DayPart(u8, u8, fn(&str) -> advent_of_code_2022::solutions::Solution);
 
 impl std::fmt::Display for DayPart {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         write!(f, "{:02} part {}", self.0, self.1)
     }
 }

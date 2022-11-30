@@ -8,7 +8,6 @@ pub fn part_b(file: &str) -> Solution {
     Solution::Integer(file.len() as i64)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
