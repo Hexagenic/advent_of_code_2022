@@ -3,7 +3,7 @@ mod day01;
 #[derive(Debug, PartialEq, Eq)]
 pub enum Solution {
     Integer(i64),
-    String(String),
+    // String(String),
 }
 
 pub type PuzzleSolution = Option<fn(&str) -> Solution>;
