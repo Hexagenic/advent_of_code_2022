@@ -41,7 +41,6 @@ fn criterion_benchmark(c: &mut Criterion) {
                 .join("input")
                 .join(&input_file);
 
-            println!("Path: {:?}", path);
             std::fs::read_to_string(&path).unwrap()
         })
         .collect();
