@@ -17,6 +17,10 @@ pub fn part_a(file: &str) -> Solution {
         }
     }
 
+    if current > highest {
+        highest = current;
+    }
+
     Solution::Integer(highest)
 }
 
@@ -43,8 +47,8 @@ pub fn part_b(file: &str) -> Solution {
     Solution::Integer(elfs.iter().rev().take(3).sum())
 }
 
-fn string_to_numbers(file: &str) -> Vec<Option<i64>> {
-    file.lines().map(|l| l.parse().ok()).collect()
+fn string_to_numbers(file: &str) -> impl Iterator<Item = Option<i64>> + '_ {
+    file.lines().map(|l| l.parse().ok())
 }
 
 #[cfg(test)]
@@ -55,7 +59,7 @@ mod tests {
     fn convert_string() {
         assert_eq!(
             vec![Some(1), Some(2), Some(3), None, Some(1)],
-            string_to_numbers("1\n2\n3\n\n1")
+            string_to_numbers("1\n2\n3\n\n1").collect::<Vec<Option<i64>>>()
         );
     }
 
