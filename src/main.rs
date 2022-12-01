@@ -6,7 +6,7 @@ use solutions::Solution;
 mod error;
 mod solutions;
 
-fn print_solution(day: u8, part: char, solution: Option<Solution>) {
+fn print_solution(day: u8, part: char, solution: &Option<Solution>) {
     match solution {
         Some(Solution::Integer(i)) => println!("{}{}: {}", day, part, i),
         // Some(Solution::String(string)) => println!("{}{}:\n{}", day, part, string),
@@ -27,8 +27,8 @@ fn run() -> Result<(), Error> {
 
             let file: String = std::fs::read_to_string(&path)?;
 
-            print_solution(*day, 'a', solution1.map(|s| s(&file)));
-            print_solution(*day, 'b', solution2.map(|s| s(&file)));
+            print_solution(*day, 'a', &solution1.map(|s| s(&file)));
+            print_solution(*day, 'b', &solution2.map(|s| s(&file)));
         }
 
         println!("Done");

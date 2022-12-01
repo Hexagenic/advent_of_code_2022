@@ -19,4 +19,5 @@ pub fn get_solution(day: u8) -> (PuzzleSolution, PuzzleSolution) {
     }
 }
 
+#[allow(clippy::cast_possible_truncation)]
 pub const MAX_SOLVED_DAY: u8 = DAYS.len() as u8;

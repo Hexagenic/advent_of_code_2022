@@ -19,17 +19,17 @@ fn criterion_benchmark(c: &mut Criterion) {
     let day_parts: Vec<DayPart> = days
         .clone()
         .flat_map(|d| {
-            let mut foo: Vec<DayPart> = vec![];
+            let mut day_parts: Vec<DayPart> = vec![];
 
             let (part_a, part_b) = advent_of_code_2022::solutions::get_solution(d);
             if let Some(part_a) = part_a {
-                foo.push(DayPart(d, 1, part_a))
+                day_parts.push(DayPart(d, 1, part_a));
             }
             if let Some(part_b) = part_b {
-                foo.push(DayPart(d, 2, part_b))
+                day_parts.push(DayPart(d, 2, part_b));
             }
 
-            foo
+            day_parts
         })
         .collect();
 
@@ -51,7 +51,9 @@ fn criterion_benchmark(c: &mut Criterion) {
             BenchmarkId::from_parameter(day_part),
             &day_part,
             |b, &day_part| {
-                let file = &inputs[(day_part.0 as usize) - 1];
+                let file: &str = &inputs[(day_part.0 as usize) - 1];
+                #[allow(clippy::needless_borrow)]
+                // TODO: removing borrow here loses 10% performance
                 b.iter(|| day_part.2(&file));
             },
         );
@@ -62,9 +64,10 @@ fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| {
             for day_part in &day_parts {
                 let file = &inputs[(day_part.0 as usize) - 1];
+                #[allow(clippy::needless_borrow)]
                 day_part.2(&file);
             }
-        })
+        });
     });
 }
 

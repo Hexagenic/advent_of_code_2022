@@ -42,7 +42,7 @@ pub fn part_b(file: &str) -> Solution {
 
     elfs.push(current);
 
-    elfs.sort();
+    elfs.sort_unstable();
 
     Solution::Integer(elfs.iter().rev().take(3).sum())
 }
