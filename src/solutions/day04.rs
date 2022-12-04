@@ -12,21 +12,12 @@ fn overlaps(ranges: &(RangeInclusive<u32>, RangeInclusive<u32>)) -> bool {
 }
 
 fn parse_line(line: &str) -> (RangeInclusive<u32>, RangeInclusive<u32>) {
-    let mut parts = line.split(',');
+    let mut parts = line.split([',', '-']).map(|s| s.parse().unwrap());
 
-    let first = parse_range(parts.next().unwrap());
-    let second = parse_range(parts.next().unwrap());
-
-    (first, second)
-}
-
-fn parse_range(line: &str) -> RangeInclusive<u32> {
-    let mut parts = line.split('-');
-
-    let start = parts.next().unwrap().parse().unwrap();
-    let end = parts.next().unwrap().parse().unwrap();
-
-    start..=end
+    (
+        parts.next().unwrap()..=parts.next().unwrap(),
+        parts.next().unwrap()..=parts.next().unwrap(),
+    )
 }
 
 pub fn part_a(file: &str) -> Solution {
