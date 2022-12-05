@@ -77,14 +77,11 @@ pub fn part_b(file: &str) -> Solution {
     let (mut stack, moves) = parse_input(file);
 
     for m in moves {
-        let original_stack = &stack[m.from as usize - 1];
+        let original_stack = &mut stack[m.from as usize - 1];
         let index = original_stack.len() - (m.count as usize);
 
-        let a = original_stack[0..index].to_vec();
-        let mut b = original_stack[index..original_stack.len()].to_vec();
-
-        stack[m.from as usize - 1] = a;
-        stack[m.to as usize - 1].append(&mut b);
+        let mut taken = original_stack.split_off(index);
+        stack[m.to as usize - 1].append(&mut taken);
     }
 
     let result = stack.iter().filter_map(|k| k.last()).collect();
