@@ -1,5 +1,3 @@
-use regex::Regex;
-
 use crate::solutions::Solution;
 
 #[derive(Eq, PartialEq, Debug)]
@@ -37,12 +35,15 @@ fn parse_stack_line(line: &str) -> impl Iterator<Item = Option<char>> + '_ {
 }
 
 fn parse_move(line: &str) -> Move {
-    let re = Regex::new(r"^move (\d+) from (\d+) to (\d+)$").unwrap();
-    let m = re.captures(line).unwrap();
+    let mut nums = line
+        .split(' ')
+        .skip(1)
+        .step_by(2)
+        .map(|s| s.parse().unwrap());
 
-    let count = m[1].parse().unwrap();
-    let from = m[2].parse().unwrap();
-    let to = m[3].parse().unwrap();
+    let count = nums.next().unwrap();
+    let from = nums.next().unwrap();
+    let to = nums.next().unwrap();
 
     Move { count, from, to }
 }
