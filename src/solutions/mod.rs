@@ -2,20 +2,22 @@ mod day01;
 mod day02;
 mod day03;
 mod day04;
+mod day05;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Solution {
     Integer(i64),
-    // String(String),
+    String(String),
 }
 
 pub type PuzzleSolution = Option<fn(&str) -> Solution>;
 
-const DAYS: [(PuzzleSolution, PuzzleSolution); 4] = [
+const DAYS: [(PuzzleSolution, PuzzleSolution); 5] = [
     (Some(day01::part_a), Some(day01::part_b)),
     (Some(day02::part_a), Some(day02::part_b)),
     (Some(day03::part_a), Some(day03::part_b)),
     (Some(day04::part_a), Some(day04::part_b)),
+    (Some(day05::part_a), Some(day05::part_b)),
 ];
 
 #[must_use]

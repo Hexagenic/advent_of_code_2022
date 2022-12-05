@@ -9,7 +9,7 @@ mod solutions;
 fn print_solution(day: u8, part: char, solution: &Option<Solution>) {
     match solution {
         Some(Solution::Integer(i)) => println!("{}{}: {}", day, part, i),
-        // Some(Solution::String(string)) => println!("{}{}:\n{}", day, part, string),
+        Some(Solution::String(string)) => println!("{}{}: {}", day, part, string),
         None => println!("{}{}: Incomplete", day, part),
     }
 }
