@@ -17,21 +17,22 @@ fn parse_commands(file: &str) -> impl Iterator<Item = Command> + '_ {
         return if cmd.starts_with('c') {
             let p = cmd.split_once(' ').unwrap().1;
 
-            match p {
-                "/" => Command::CdRoot,
-                ".." => Command::CdUp,
-                s => Command::CdDir {
-                    directory: s.to_string(),
-                },
-            }
-        } else {
-            let mut size = 0;
-
-            for l in cmd.lines().skip(1) {
-                if !l.starts_with('d') {
-                    size += l.split_once(' ').unwrap().0.parse::<i64>().unwrap();
+            if p.starts_with('/') {
+                Command::CdRoot
+            } else if p.starts_with('.') {
+                Command::CdUp
+            } else {
+                Command::CdDir {
+                    directory: p.to_string(),
                 }
             }
+        } else {
+            let size = cmd
+                .lines()
+                .skip(1)
+                .filter(|l| !l.starts_with('d'))
+                .map(|l| l.split_once(' ').unwrap().0.parse::<i64>().unwrap())
+                .sum();
 
             Command::Ls { size }
         };
@@ -49,11 +50,8 @@ fn execute_commands(commands: impl Iterator<Item = Command>) -> HashMap<String, 
                 path.drain(..1);
             }
             Command::CdDir { directory } => {
-                if path != "/" {
-                    path.push('/');
-                }
-
                 path.push_str(&directory);
+                path.push('/');
             }
             Command::CdUp => {
                 path.drain(..path.rfind('/').unwrap());
