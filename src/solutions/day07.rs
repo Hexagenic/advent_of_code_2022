@@ -10,41 +10,35 @@ enum Command {
     Ls { size: i64 },
 }
 
-fn parse_commands(file: &str) -> Vec<Command> {
-    file.split('$')
-        .skip(1)
-        .map(|c| {
-            let cmd = c.trim();
+fn parse_commands(file: &str) -> impl Iterator<Item = Command> + '_ {
+    file.split('$').skip(1).map(|c| {
+        let cmd = c.trim();
 
-            return if cmd.starts_with('c') {
-                let p = cmd.split(' ').nth(1).unwrap();
+        return if cmd.starts_with('c') {
+            let p = cmd.split_once(' ').unwrap().1;
 
-                match p {
-                    "/" => Command::CdRoot,
-                    ".." => Command::CdUp,
-                    s => Command::CdDir {
-                        directory: s.to_string(),
-                    },
+            match p {
+                "/" => Command::CdRoot,
+                ".." => Command::CdUp,
+                s => Command::CdDir {
+                    directory: s.to_string(),
+                },
+            }
+        } else {
+            let mut size = 0;
+
+            for l in cmd.lines().skip(1) {
+                if !l.starts_with('d') {
+                    size += l.split_once(' ').unwrap().0.parse::<i64>().unwrap();
                 }
-            } else {
-                let mut dirs: Vec<String> = vec![];
-                let mut size = 0;
+            }
 
-                for l in cmd.lines().skip(1) {
-                    if l.starts_with('d') {
-                        dirs.push(l.split_at(4).1.to_string());
-                    } else {
-                        size += l.split(' ').next().unwrap().parse::<i64>().unwrap();
-                    }
-                }
-
-                Command::Ls { size }
-            };
-        })
-        .collect()
+            Command::Ls { size }
+        };
+    })
 }
 
-fn execute_commands(commands: &[Command]) -> HashMap<String, i64> {
+fn execute_commands(commands: impl Iterator<Item = Command>) -> HashMap<String, i64> {
     let mut path = "/".to_string();
 
     let mut tree: HashMap<String, i64> = HashMap::new();
@@ -52,54 +46,67 @@ fn execute_commands(commands: &[Command]) -> HashMap<String, i64> {
     for command in commands {
         match command {
             Command::CdRoot => {
-                path = "/".to_string();
+                path.drain(..1);
             }
             Command::CdDir { directory } => {
                 if path != "/" {
                     path.push('/');
                 }
 
-                path.push_str(directory);
+                path.push_str(&directory);
             }
             Command::CdUp => {
-                path = path.rsplit_once('/').unwrap().0.to_string();
+                path.drain(..path.rfind('/').unwrap());
             }
             Command::Ls { size } => {
                 if tree.contains_key(&path) {
                     continue;
                 }
-                tree.insert(path.clone(), *size);
+                tree.insert(path.clone(), size);
             }
         }
     }
 
-    let mut cumulative_tree = tree.clone();
+    tree
+}
 
-    for (k1, v1) in &tree {
-        for (k, v) in &mut cumulative_tree {
-            if k != k1 && k1.starts_with(k) {
-                *v += v1;
-            }
-        }
-    }
+fn tree_collapse(tree: &HashMap<String, i64>) -> (i64, impl Iterator<Item = i64> + '_) {
+    let root = tree.values().sum();
 
-    cumulative_tree
+    let iter = tree.iter().map(|(k1, v1)| {
+        tree.iter()
+            .map(|(k2, v2)| {
+                if k2 == k1 {
+                    *v1
+                } else if k2.starts_with(k1) {
+                    *v2
+                } else {
+                    0
+                }
+            })
+            .sum()
+    });
+
+    (root, iter)
 }
 
 pub fn part_a(file: &str) -> Solution {
-    let tree = execute_commands(&parse_commands(file));
-    Solution::Integer(tree.iter().map(|(_, v)| v).filter(|v| **v <= 100_000).sum())
+    let tree = execute_commands(parse_commands(file));
+
+    let (_, iter) = tree_collapse(&tree);
+
+    Solution::Integer(iter.filter(|v| *v <= 100_000).sum())
 }
 
 pub fn part_b(file: &str) -> Solution {
-    let tree = execute_commands(&parse_commands(file));
+    let tree = execute_commands(parse_commands(file));
+    let (used, iter) = tree_collapse(&tree);
 
     let total: i64 = 70_000_000;
     let required: i64 = 30_000_000;
-    let used: i64 = *tree.get("/").unwrap();
     let to_free = required - (total - used);
 
-    Solution::Integer(*tree.values().filter(|v| v >= &&to_free).min().unwrap())
+    Solution::Integer(iter.filter(|v| v >= &to_free).min().unwrap())
 }
 
 #[cfg(test)]
@@ -119,7 +126,7 @@ mod tests {
         let test_data = read_test_data();
 
         assert_eq!(
-            parse_commands(test_data.as_str()),
+            parse_commands(test_data.as_str()).collect::<Vec<_>>(),
             vec![
                 Command::CdRoot,
                 Command::Ls { size: 23_352_670 },
