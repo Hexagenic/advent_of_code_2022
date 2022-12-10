@@ -5,6 +5,7 @@ mod day04;
 mod day05;
 mod day06;
 mod day07;
+mod day08;
 mod day09;
 mod day10;
 
@@ -24,7 +25,7 @@ const DAYS: [(PuzzleSolution, PuzzleSolution); 10] = [
     (Some(day05::part_a), Some(day05::part_b)),
     (Some(day06::part_a), Some(day06::part_b)),
     (Some(day07::part_a), Some(day07::part_b)),
-    (None, None),
+    (Some(day08::part_a), Some(day08::part_b)),
     (Some(day09::part_a), Some(day09::part_b)),
     (Some(day10::part_a), Some(day10::part_b)),
 ];
