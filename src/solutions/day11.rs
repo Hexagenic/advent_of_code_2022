@@ -153,6 +153,6 @@ mod tests {
 
     #[test]
     fn test_monkey_business_part2() {
-        assert_eq!(Solution::Integer(2713310158), part_b(&read_test_data()));
+        assert_eq!(Solution::Integer(2_713_310_158), part_b(&read_test_data()));
     }
 }

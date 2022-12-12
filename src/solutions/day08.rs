@@ -183,7 +183,7 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        assert_eq!(25, parse_square(&read_test_data()).len())
+        assert_eq!(25, parse_square(&read_test_data()).len());
     }
 
     #[test]
