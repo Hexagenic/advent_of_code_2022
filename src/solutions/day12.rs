@@ -83,19 +83,55 @@ impl Mountain {
         .1
     }
 
-    fn distance_to_zero(&self, pos: &Pos) -> u32 {
-        let mut min_dist = 0;
+    const fn valid_pos(&self, pos: &Pos) -> bool {
+        pos.0 >= 0 && pos.0 < self.width && pos.1 >= 0 && pos.1 < self.height
+    }
 
-        for x in 0..self.width {
-            for y in 0..self.height {
-                let search_pos = Pos(x, y);
-                if self.height(&search_pos) == 0 {
-                    min_dist = min_dist.min(search_pos.distance(pos));
+    fn distance_to_zero(&self, pos: &Pos) -> u32 {
+        let mut min_dist = u32::MAX;
+
+        let mut dir = 0;
+        let mut layer = 1;
+        let mut step = 0;
+        let mut test_pos = Pos(pos.0 - 1, pos.1 - 1);
+
+        loop {
+            if layer >= 100 {
+                break;
+            }
+
+            if self.valid_pos(&test_pos) && self.height(&test_pos) == 0 {
+                min_dist = min_dist.min(pos.distance(&test_pos));
+            }
+
+            match dir {
+                0 => test_pos.0 += 1,
+                1 => test_pos.1 += 1,
+                2 => test_pos.0 -= 1,
+                3 => test_pos.1 -= 1,
+                _ => panic!("Wah"),
+            }
+
+            step += 1;
+
+            if step >= 2 * layer {
+                dir += 1;
+                step = 0;
+            }
+
+            if dir >= 4 {
+                if min_dist < u32::MAX {
+                    return min_dist;
                 }
+                dir = 0;
+                layer += 1;
+                test_pos.0 -= 1;
+                test_pos.1 -= 1;
+                step = 0;
             }
         }
 
-        min_dist
+        0
     }
 
     fn path_down(&self) -> u32 {
