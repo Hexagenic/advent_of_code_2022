@@ -5,7 +5,7 @@ use crate::solutions::Solution;
 
 #[derive(Eq, PartialEq)]
 enum Value {
-    Constant(i32),
+    Integer(i32),
     List(Vec<Self>),
 }
 
@@ -15,9 +15,23 @@ impl PartialOrd<Self> for Value {
     }
 }
 
+fn i_to_list(i: i32) -> Value {
+    Value::List(vec![Value::Integer(i)])
+}
+
+fn wrap(v: Value) -> Value {
+    Value::List(vec![v])
+}
+
 impl Ord for Value {
+    /// Listen, this works. Don't worry about it
     fn cmp(&self, other: &Self) -> Ordering {
-        check_pair((self, other))
+        match (self, other) {
+            (Self::Integer(a), Self::Integer(b)) => a.cmp(b),
+            (Self::List(a), Self::List(b)) => a.cmp(b),
+            (Self::Integer(a), b) => i_to_list(*a).cmp(b),
+            (a, Self::Integer(b)) => a.cmp(&i_to_list(*b)),
+        }
     }
 }
 
@@ -63,48 +77,20 @@ fn parse_number<T: Iterator<Item = char>>(it: &mut Peekable<T>) -> Value {
 
     while let Some(&c) = it.peek() {
         if !c.is_ascii_digit() {
-            return Value::Constant(str.parse().unwrap());
+            return Value::Integer(str.parse().unwrap());
         }
 
         str.push(c);
         it.next();
     }
 
-    Value::Constant(str.parse().unwrap())
-}
-
-fn check_lists(a: &Vec<Value>, b: &Vec<Value>) -> Ordering {
-    for (a, b) in a.iter().zip(b.iter()) {
-        let ord = check_pair((a, b));
-        if ord != Ordering::Equal {
-            return ord;
-        }
-    }
-
-    if a.len() != b.len() {
-        return a.len().cmp(&b.len());
-    }
-
-    Ordering::Equal
-}
-
-fn check_pair(pair: (&Value, &Value)) -> Ordering {
-    match pair {
-        (Value::Constant(a), Value::Constant(b)) => a.cmp(b),
-        (Value::Constant(a), b @ Value::List(_)) => {
-            check_pair((&Value::List(vec![Value::Constant(*a)]), b))
-        }
-        (a @ Value::List(_), Value::Constant(b)) => {
-            check_pair((a, &Value::List(vec![Value::Constant(*b)])))
-        }
-        (Value::List(a), Value::List(b)) => check_lists(a, b),
-    }
+    Value::Integer(str.parse().unwrap())
 }
 
 pub fn part_a(file: &str) -> Solution {
     Solution::Integer(
         parse_file(file)
-            .map(|(a, b)| check_pair((&a, &b)))
+            .map(|(a, b)| a.cmp(&b))
             .enumerate()
             .filter(|(_, v)| *v == Ordering::Less)
             .map(|(i, _)| i as i64 + 1)
@@ -122,24 +108,13 @@ pub fn part_b(file: &str) -> Solution {
                 Some(parse_line(l))
             }
         })
-        .chain(vec![
-            Value::List(vec![Value::Constant(2)]),
-            Value::List(vec![Value::Constant(6)]),
-        ])
+        .chain(vec![wrap(i_to_list(2)), wrap(i_to_list(6))])
         .collect::<Vec<Value>>();
 
     lines.sort_unstable();
 
-    let first_index = lines
-        .iter()
-        .position(|p| *p == Value::List(vec![Value::Constant(2)]))
-        .unwrap()
-        + 1;
-    let second_index = lines
-        .iter()
-        .position(|p| *p == Value::List(vec![Value::Constant(6)]))
-        .unwrap()
-        + 1;
+    let first_index = lines.iter().position(|p| *p == wrap(i_to_list(2))).unwrap() + 1;
+    let second_index = lines.iter().position(|p| *p == wrap(i_to_list(6))).unwrap() + 1;
 
     Solution::Integer((first_index * second_index) as i64)
 }
@@ -161,7 +136,7 @@ mod tests {
     impl fmt::Debug for Value {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match self {
-                Self::Constant(v) => write!(f, "{}", v),
+                Self::Integer(v) => write!(f, "{}", v),
                 Self::List(v) => write!(f, "{:?}", v),
             }
         }
@@ -169,18 +144,15 @@ mod tests {
 
     #[test]
     fn test_parse_number() {
-        assert_eq!(
-            Value::Constant(1),
-            parse_number(&mut "1".chars().peekable())
-        );
+        assert_eq!(Value::Integer(1), parse_number(&mut "1".chars().peekable()));
 
         assert_eq!(
-            Value::Constant(100),
+            Value::Integer(100),
             parse_number(&mut "100".chars().peekable())
         );
 
         assert_eq!(
-            Value::Constant(50),
+            Value::Integer(50),
             parse_number(&mut "50abc".chars().peekable())
         );
     }
@@ -190,14 +162,14 @@ mod tests {
         assert_eq!(Value::List(vec![]), parse_line("[]"));
 
         assert_eq!(
-            Value::List(vec![Value::Constant(1), Value::Constant(2)]),
+            Value::List(vec![Value::Integer(1), Value::Integer(2)]),
             parse_line("[1,2]")
         );
 
         assert_eq!(
             Value::List(vec![
-                Value::Constant(1),
-                Value::List(vec![Value::Constant(2), Value::Constant(3)]),
+                Value::Integer(1),
+                Value::List(vec![Value::Integer(2), Value::Integer(3)]),
             ]),
             parse_line("[1,[2,3]]")
         );
