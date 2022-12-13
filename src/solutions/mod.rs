@@ -10,6 +10,7 @@ mod day09;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Solution {
@@ -19,7 +20,7 @@ pub enum Solution {
 
 pub type PuzzleSolution = Option<fn(&str) -> Solution>;
 
-const DAYS: [(PuzzleSolution, PuzzleSolution); 12] = [
+const DAYS: [(PuzzleSolution, PuzzleSolution); 13] = [
     (Some(day01::part_a), Some(day01::part_b)),
     (Some(day02::part_a), Some(day02::part_b)),
     (Some(day03::part_a), Some(day03::part_b)),
@@ -32,6 +33,7 @@ const DAYS: [(PuzzleSolution, PuzzleSolution); 12] = [
     (Some(day10::part_a), Some(day10::part_b)),
     (Some(day11::part_a), Some(day11::part_b)),
     (Some(day12::part_a), Some(day12::part_b)),
+    (Some(day13::part_a), Some(day13::part_b)),
 ];
 
 #[must_use]
