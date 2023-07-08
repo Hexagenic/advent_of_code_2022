@@ -10,6 +10,6 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      - deps:
+      deps:
         patterns:
-          - *
+          - "*"
