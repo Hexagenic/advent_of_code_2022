@@ -9,7 +9,7 @@ edition = "2021"
 criterion = {version="0.5.1", features=["html_reports"]}
 
 [dependencies]
-pathfinding = "4.8.2"
+pathfinding = "4.9.1"
 
 [[bench]]
 name = "aoc_bench"
